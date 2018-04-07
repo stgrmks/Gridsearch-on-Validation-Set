@@ -25,7 +25,7 @@ class GridSearchValidationSet(BaseEstimator, TransformerMixin):
             yHat = self.model.predict_proba(self.X_val)
 
             if self.postprocessing is not None:
-                yHat = self.postprocessing.fit_transform(yHat)
+                yHat = self.postprocessing.fit_transform(proba = yHat, m_classes = self.model.classes_)
             else:
                 yHat = self.model.classes_.take(np.argmax(yHat, axis=1), axis=0)
 
