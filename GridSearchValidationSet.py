@@ -4,6 +4,30 @@ import numpy as np
 import operator
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.model_selection import ParameterGrid
+from scipy.stats import mode
+
+class median_filter(BaseEstimator, TransformerMixin):
+
+    def __init__(self, length = 3, stride = 2):
+        self.length = length
+        self.stride = stride
+
+    def transform(self, X):
+        yHat = self.m_classes.take(np.argmax(X, axis=1), axis=0)
+        start, end = 0, self.length
+        while end < yHat.shape[0]:
+            yHat[start:end] = mode(yHat[start:end])[0][0]
+            end += self.stride
+            start += self.stride
+            if end > yHat.shape[0]:
+                end = yHat.shape[0]
+                yHat[start:end] = mode(yHat[start:end])[0][0]
+        return yHat
+
+    def fit(self, X, m_classes):
+        self.m_classes = m_classes
+        return self
+
 
 class GridSearchValidationSet(BaseEstimator, TransformerMixin):
 
@@ -25,7 +49,7 @@ class GridSearchValidationSet(BaseEstimator, TransformerMixin):
             yHat = self.model.predict_proba(self.X_val)
 
             if self.postprocessing is not None:
-                yHat = self.postprocessing.fit_transform(proba = yHat, m_classes = self.model.classes_)
+                yHat = self.postprocessing.fit_transform(X = yHat, m_classes = self.model.classes_)
             else:
                 yHat = self.model.classes_.take(np.argmax(yHat, axis=1), axis=0)
 
@@ -55,7 +79,9 @@ if __name__ == '__main__':
         'max_depth': [2, 10]
     }
 
-    GS = GridSearchValidationSet(model = model, param_grid = param_grid, X_val = X_val, y_val = y_val, scorer = accuracy_score, postprocessing = None, verbose = 1)
+    postprocessing = median_filter(length = 3, stride = 2)
+
+    GS = GridSearchValidationSet(model = model, param_grid = param_grid, X_val = X_val, y_val = y_val, scorer = accuracy_score, postprocessing = postprocessing, verbose = 1)
     GS.fit(X = X[:500], y = y[:500])
 
     print '\nResult: {}\nModel: {}\nBest Score: {}'.format(GS.result_, GS.best_estimator_, GS.best_score_)
