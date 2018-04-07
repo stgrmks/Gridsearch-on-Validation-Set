@@ -86,4 +86,3 @@ if __name__ == '__main__':
 
     print '\nResult: {}\nModel: {}\nBest Score: {}'.format(GS.result_, GS.best_estimator_, GS.best_score_)
 
-    print 'done'
