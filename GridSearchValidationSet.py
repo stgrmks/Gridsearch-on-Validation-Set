@@ -19,7 +19,7 @@ class median_filter(BaseEstimator, TransformerMixin):
             yHat[start:end] = mode(yHat[start:end])[0][0]
             end += self.stride
             start += self.stride
-            if end > yHat.shape[0]:
+            if end >= yHat.shape[0]:
                 end = yHat.shape[0]
                 yHat[start:end] = mode(yHat[start:end])[0][0]
         return yHat
