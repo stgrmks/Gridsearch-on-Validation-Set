@@ -2,11 +2,11 @@ __author__ = 'MSteger'
 
 import numpy as np
 import operator
-from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.base import BaseEstimator, TransformerMixin, clone
 from sklearn.model_selection import ParameterGrid
 from scipy.stats import mode
 
-class median_filter(BaseEstimator, TransformerMixin):
+class sliding_majority_filter(BaseEstimator, TransformerMixin):
 
     def __init__(self, length = 3, stride = 2):
         self.length = length
@@ -44,14 +44,15 @@ class GridSearchValidationSet(BaseEstimator, TransformerMixin):
         performance, gs_model_params = {}, {}
 
         for i, model_params in enumerate(ParameterGrid(self.param_grid)):
-            self.model.set_params(**model_params)
-            self.model.fit(X, y, **(kwargs or {}))
-            yHat = self.model.predict_proba(self.X_val)
+            model = clone(self.model)
+            model.set_params(**model_params)
+            model.fit(X, y, **(kwargs or {}))
+            yHat = model.predict_proba(self.X_val)
 
             if self.postprocessing is not None:
-                yHat = self.postprocessing.fit_transform(X = yHat, m_classes = self.model.classes_)
+                yHat = self.postprocessing.fit_transform(X = yHat, m_classes = model.classes_)
             else:
-                yHat = self.model.classes_.take(np.argmax(yHat, axis=1), axis=0)
+                yHat = model.classes_.take(np.argmax(yHat, axis=1), axis=0)
 
             score = self.scorer(self.y_val, yHat)
             if self.verbose: print '\nGridSearch iteration {}:\n{}: {}\nparams: {}'.format(i, self.scorer.__name__, score, model_params)
@@ -73,13 +74,13 @@ if __name__ == '__main__':
     y = np.where(y > 0, 'one', 'zero')
     X_val, y_val = X[500:], y[500:]
 
-    model = RandomForestClassifier()
+    model = RandomForestClassifier(random_state=1337)
     param_grid = {
         'n_estimators': [10, 100],
         'max_depth': [2, 10]
     }
 
-    postprocessing = median_filter(length = 3, stride = 2)
+    postprocessing = sliding_majority_filter(length = 3, stride = 2)
 
     GS = GridSearchValidationSet(model = model, param_grid = param_grid, X_val = X_val, y_val = y_val, scorer = accuracy_score, postprocessing = postprocessing, verbose = 1)
     GS.fit(X = X[:500], y = y[:500])
