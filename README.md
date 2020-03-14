@@ -1,2 +1,6 @@
 # Gridsearch-on-Validation-Set
-sklearn-compatible gridsearch on validation set
+Scitkit-learn compatible GridSearch on Validation Set
+## Install
+`pip install -r requirements.txt`
+## Example
+`src/example.py`
