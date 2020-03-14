@@ -56,7 +56,7 @@ class GridSearchValidationSet(BaseEstimator, TransformerMixin):
             else:
                 yHat: np.ndarray = model.predict(self.X_val)
 
-            score = self.scorer(self.y_val, yHat)
+            score: float = self.scorer(self.y_val, yHat)
             if score > best_score:
                 best_iteration = i
                 best_score = score
