@@ -1,7 +1,6 @@
 import numpy as np
 from scipy.stats import mode
 from sklearn.base import BaseEstimator, TransformerMixin
-
 from src.grid_search_val import GridSearchValidationSet
 
 

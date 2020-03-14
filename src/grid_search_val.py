@@ -67,7 +67,11 @@ class GridSearchValidationSet(BaseEstimator, TransformerMixin):
                     )
                 )
 
-            search_summary[i] = {self.scorer.__name__: score, "params": model.get_params(), "model": model}
+            search_summary[i] = {
+                self.scorer.__name__: score,
+                "params": model.get_params(),
+                "model": model,
+            }
         self.result_ = search_summary
         self.best_estimator_ = search_summary[best_iteration]["model"]
         self.best_score_ = best_score
