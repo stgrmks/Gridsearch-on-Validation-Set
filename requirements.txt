@@ -10,7 +10,7 @@ joblib==0.14.1
 jsonrpclib-pelix==0.4.0
 multidict==4.7.5
 numpy==1.18.1
-protobuf==3.11.3
+protobuf==3.18.3
 pyaes==1.6.1
 QDarkStyle==2.6.8
 qrcode==6.1
