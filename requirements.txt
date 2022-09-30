@@ -6,7 +6,7 @@ certifi==2019.11.28
 dnspython==1.16.0
 ecdsa==0.15
 Electrum==3.3.8
-joblib==0.14.1
+joblib==1.2.0
 jsonrpclib-pelix==0.4.0
 multidict==4.7.5
 numpy==1.18.1
